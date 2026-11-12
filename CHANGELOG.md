@@ -4,6 +4,12 @@ All notable changes to this project are recorded here.
 
 ## Unreleased
 
+- Run record: the skill works on a `codebase-improvement/<date>` branch and records one Baseline commit (documentation only) and one Improvement commit per approved change, each with a `Codebase-Improvement` trailer and a structured message. See `docs/adr/0001-phase-commits-as-run-record.md`.
+- `scripts/render_report.py` generates a self-contained HTML run report in `.git/codebase-improvement/report.html` from those commits.
+- New reference `references/run-record.md`.
+
+## 0.1.0
+
 - Initial modular Agent Skill package.
 - Documentation-first baseline and architecture improvement workflow.
 - Reference guides for architecture, refactoring, technical writing and quality gates.

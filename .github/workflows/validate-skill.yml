@@ -41,3 +41,6 @@ jobs:
       - name: Compile Python scripts
         run: |
           python -m py_compile skills/codebase-improvement/scripts/*.py
+
+      - name: Run render_report self-check
+        run: python -B tests/test_render_report.py

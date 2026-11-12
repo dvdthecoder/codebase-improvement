@@ -55,6 +55,7 @@ Load only the supporting reference needed for the current phase:
 - Implementation and migration: `references/refactoring-guidelines.md`
 - Documentation structure and style: `references/technical-writing.md`
 - Final gates and iteration: `references/quality-gates.md`
+- Run branch, commit format and run report: `references/run-record.md`
 
 Use scripts in `scripts/` where available. Inspect a script before executing it in an unfamiliar repository.
 
@@ -70,6 +71,14 @@ Use scripts in `scripts/` where available. Inspect a script before executing it 
 8. Create a concise repository map: major subsystems, entry points, data stores, external integrations and test commands.
 
 Do not infer actual module boundaries from directory names alone.
+
+### Start the run record
+
+Read `references/run-record.md`. Documentation and improvement are recorded as separate commits on a run branch.
+
+- **Git repository, clean working tree:** create the branch `codebase-improvement/<YYYY-MM-DD>` from HEAD.
+- **Uncommitted changes:** stop and ask the user how to proceed. Never carry them onto the run branch.
+- **Not a Git repository:** ask whether to run `git init` so the run is recorded. If the user declines, or nobody can answer (headless run), continue without a run record and say so in the final report.
 
 ## Phase 1 — Establish baseline documentation (mandatory)
 
@@ -90,6 +99,10 @@ Classify each critical documentation area as `Adequate`, `Needs improvement`, `M
 Do not proceed to architecture recommendations while critical system boundaries, execution paths or data ownership remain materially misunderstood. Investigate further or ask the user for missing context.
 
 The baseline need not be exhaustive. It must be accurate enough to reason about the selected scope.
+
+### Baseline commit
+
+When the gate passes, run the token and link validators on the baseline documents, then make the **Baseline commit**: documentation changes only, with the message format in `references/run-record.md`. It is the only Baseline commit in the run.
 
 ## Phase 2 — Assess architecture
 
@@ -185,6 +198,10 @@ Verify:
 - Tests and validation results are reported accurately.
 - No unrelated or unapproved changes were introduced.
 
+### Improvement commit
+
+When the gates pass, make one **Improvement commit** for the approved change: code, tests and the documentation that describes it, with the message format in `references/run-record.md`. One approved improvement equals one Improvement commit.
+
 ## Phase 8 — Repeat or stop
 
 Treat the verified implementation and updated documentation as the next baseline. Reassess for remaining high-value opportunities.
@@ -203,5 +220,12 @@ Provide:
 6. Documentation updated.
 7. Per-file token counts, naming the tokenizer or estimation method.
 8. Remaining risks, unknowns and recommended next increment.
+9. Run branch, commit hashes and the run report path, produced by:
+
+   ```bash
+   python <skill-root>/scripts/render_report.py --repo <repository-root>
+   ```
+
+   If there is no run record, do not run the script; say so and why.
 
 Never report completion if a required gate failed. Clearly state partial completion and blockers.

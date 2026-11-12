@@ -23,10 +23,24 @@ Copy a published Skill into an Agent's skill directory, at project or global lev
 A third-party Skill installed in this repo only to help develop it (e.g. `grill-with-docs`). Never Published.
 _Avoid_: bundled skill
 
+**Baseline commit**:
+The commit that records the current-state documentation of the target repository, before any improvement. Contains documentation only.
+_Avoid_: docs commit, initial commit
+
+**Improvement commit**:
+A commit that records one approved improvement: the code change, its tests and the documentation updates that describe it.
+_Avoid_: refactor commit, fix commit
+
+**Run report**:
+A self-contained HTML page generated from a run's Baseline and Improvement commits, showing documentation and improvements separately.
+_Avoid_: dashboard, summary
+
 ## Relationships
 
 - One **Skill** is **Published** once and **Installed** into many **Agents**
 - The published repo contains exactly one **Skill**: `codebase-improvement`
+- A run produces exactly one **Baseline commit**, followed by zero or more **Improvement commits**
+- A **Run report** is derived from those commits; it is never the source of truth
 - Codex and OpenCode share the project-level skill directory; Claude Code has its own
 
 ## Flagged ambiguities

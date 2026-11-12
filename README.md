@@ -10,6 +10,7 @@ The workflow is deliberately **documentation-first**:
 4. Propose improvements and obtain approval at the configured decision gates.
 5. Implement selected changes and validate them.
 6. Update documentation to describe the verified new state.
+   Each approved improvement becomes its own commit, separate from the baseline documentation commit.
 7. Run consistency and token-budget checks.
 8. Repeat only when another worthwhile improvement exists.
 
@@ -33,6 +34,9 @@ codebase-improvement/
 ├── CHANGELOG.md
 ├── SECURITY.md
 ├── CONTEXT.md
+├── docs/
+│   └── adr/
+│       └── 0001-phase-commits-as-run-record.md
 ├── skills/
 │   └── codebase-improvement/
 │       ├── SKILL.md
@@ -41,11 +45,13 @@ codebase-improvement/
 │       │   ├── architecture-assessment.md
 │       │   ├── refactoring-guidelines.md
 │       │   ├── technical-writing.md
-│       │   └── quality-gates.md
+│       │   ├── quality-gates.md
+│       │   └── run-record.md
 │       ├── scripts/
 │       │   ├── check_doc_tokens.py
 │       │   ├── check_documentation.py
-│       │   └── validate_links.py
+│       │   ├── validate_links.py
+│       │   └── render_report.py
 │       └── assets/
 │           └── documentation-template/
 │               ├── architecture.md
@@ -64,6 +70,8 @@ codebase-improvement/
 │           ├── README.md
 │           └── src/
 │               └── main.py
+├── tests/
+│   └── test_render_report.py
 └── .github/
     └── workflows/
         └── validate-skill.yml
@@ -100,6 +108,22 @@ cp -R /tmp/codebase-improvement/skills/codebase-improvement .claude/skills/
 ### Updating
 
 Re-run `npx skills add dvdthecoder/codebase-improvement` (or the copy step) to pick up the latest release. Review local customizations before replacing an installed skill.
+
+## Run record and report
+
+The skill records each run on its own branch, `codebase-improvement/<date>`, and never touches the branch you had checked out:
+
+- one **Baseline commit**: documentation of the current system, with no code changes;
+- one **Improvement commit** per approved change: code, tests and updated documentation, with the finding, evidence and validation results in the commit message.
+
+At the end of the run it generates an HTML report from those commits:
+
+```bash
+python skills/codebase-improvement/scripts/render_report.py --repo <target-repo>
+# Wrote <target-repo>/.git/codebase-improvement/report.html
+```
+
+The report lives inside `.git/`, so it is never committed. Rebuild it at any time from the branch. Review the branch, then merge or discard it as one unit.
 
 ## Running the validators
 
