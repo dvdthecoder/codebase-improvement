@@ -56,6 +56,7 @@ codebase-improvement/
 │           └── documentation-template/
 │               ├── architecture.md
 │               ├── component.md
+│               ├── glossary.md
 │               └── adr.md
 ├── examples/
 │   ├── sample-assessment/

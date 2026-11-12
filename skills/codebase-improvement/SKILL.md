@@ -89,8 +89,9 @@ Read `references/baseline-documentation.md`.
 3. Create or repair a minimum viable baseline describing the actual current system.
 4. Mark each important claim as verified, inferred or unknown when evidence is incomplete.
 5. Record gaps that cannot be resolved safely from available evidence.
-6. Validate links, names, interfaces and diagrams against the repository.
-7. Enforce the per-file token limit.
+6. Record the domain vocabulary in `docs/glossary.md` (or the repository's existing glossary or `CONTEXT.md`).
+7. Validate links, names, interfaces and diagrams against the repository.
+8. Enforce the per-file token limit.
 
 ### Baseline maturity gate
 
@@ -166,7 +167,7 @@ If validation fails, fix within the approved scope or stop and explain the block
 
 Read `references/technical-writing.md`.
 
-Update the baseline documents to describe the verified resulting implementation. Update relevant architecture diagrams, interfaces, data flows, configuration, operational guidance and ADRs.
+Update the baseline documents to describe the verified resulting implementation. Update relevant architecture diagrams, interfaces, data flows, configuration, operational guidance, ADRs and the glossary when the change adds, renames or removes a domain term.
 
 Keep a clear distinction between:
 - What existed before.

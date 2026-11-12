@@ -20,6 +20,7 @@ Required:
 - Current-state map grounded in source.
 - Critical entry points, components, interfaces and data ownership understood.
 - Important execution flows described.
+- Domain terms defined in the glossary, with ambiguities flagged.
 - Critical unknowns recorded.
 - Documentation maturity assessed.
 - Generated docs below the token limit.

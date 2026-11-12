@@ -86,6 +86,16 @@ Adapt to the system; do not create empty sections.
 - Unresolved questions and assumptions.
 - Areas not inspected.
 
+### Glossary
+
+Record the repository's domain vocabulary in `docs/glossary.md`, using `assets/documentation-template/glossary.md`. If the repository already has a glossary or a `CONTEXT.md`, update that file instead of creating a second one.
+
+- Include domain terms: the nouns and verbs a domain expert would use (for example *merge request*, *candidate*, *enrichment*). Exclude general programming terms and implementation details such as class names, frameworks or file layout.
+- Give each term a one-line definition, the code symbol that evidences it, and the synonyms to avoid.
+- When the code uses several words for one concept (*MR*, *merge request*, *PR*), pick the canonical term and list the others under *Avoid*.
+- When one word means different things in different places, flag it under *Ambiguities* rather than guessing.
+- Skip the glossary only when the repository has no domain vocabulary beyond general programming terms, and say so in the final report.
+
 ## 4. Evidence and confidence
 
 Use explicit labels in working notes and, where helpful, in documents:
@@ -120,6 +130,7 @@ Prefer a compact structure aligned to existing repository conventions. A possibl
 ```text
 docs/
   README.md
+  glossary.md
   architecture/
     overview.md
     components.md

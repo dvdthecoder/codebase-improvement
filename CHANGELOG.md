@@ -2,6 +2,10 @@
 
 All notable changes to this project are recorded here.
 
+## Unreleased
+
+- Baseline documentation now includes a domain glossary (`docs/glossary.md`, or the repository's existing glossary or `CONTEXT.md`), with a new template `assets/documentation-template/glossary.md`.
+
 ## 0.2.0
 
 - Run record: the skill works on a `codebase-improvement/<date>` branch and records one Baseline commit (documentation only) and one Improvement commit per approved change, each with a `Codebase-Improvement` trailer and a structured message. See `docs/adr/0001-phase-commits-as-run-record.md`.
