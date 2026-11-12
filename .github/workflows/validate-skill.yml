@@ -1,0 +1,43 @@
+name: Validate skill package
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check per-file token budget (conservative estimate)
+        run: |
+          python skills/codebase-improvement/scripts/check_doc_tokens.py \
+            --directory . \
+            --max-tokens 5000 \
+            --target-tokens 4200
+
+      - name: Check skill documentation structure
+        run: |
+          python skills/codebase-improvement/scripts/check_documentation.py \
+            --directory skills/codebase-improvement
+
+      - name: Validate local Markdown links
+        run: |
+          python skills/codebase-improvement/scripts/validate_links.py \
+            --directory .
+
+      - name: Compile Python scripts
+        run: |
+          python -m py_compile skills/codebase-improvement/scripts/*.py

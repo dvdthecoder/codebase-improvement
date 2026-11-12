@@ -1,0 +1,8 @@
+# Dev Skills installed locally for developing this repo; never published
+.agents/
+.claude/
+skills-lock.json
+
+__pycache__/
+*.pyc
+.DS_Store
