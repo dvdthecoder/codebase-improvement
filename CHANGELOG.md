@@ -2,7 +2,7 @@
 
 All notable changes to this project are recorded here.
 
-## Unreleased
+## 0.3.0
 
 - Baseline documentation now includes a domain glossary (`docs/glossary.md`, or the repository's existing glossary or `CONTEXT.md`), with a new template `assets/documentation-template/glossary.md`.
 
