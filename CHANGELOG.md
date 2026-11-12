@@ -2,7 +2,7 @@
 
 All notable changes to this project are recorded here.
 
-## Unreleased
+## 0.2.0
 
 - Run record: the skill works on a `codebase-improvement/<date>` branch and records one Baseline commit (documentation only) and one Improvement commit per approved change, each with a `Codebase-Improvement` trailer and a structured message. See `docs/adr/0001-phase-commits-as-run-record.md`.
 - `scripts/render_report.py` generates a self-contained HTML run report in `.git/codebase-improvement/report.html` from those commits.
