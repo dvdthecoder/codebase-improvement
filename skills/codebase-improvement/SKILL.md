@@ -43,6 +43,7 @@ Default: **interactive**.
 - **Interactive:** obtain approval before application-code changes and before material changes to public interfaces, data formats, migrations, security posture or externally visible behaviour.
 - **Autonomous:** may select and implement low-risk, reversible improvements only when explicitly requested. Still stop for destructive, externally visible, security-sensitive, data-migrating or public-contract changes.
 - **Assessment-only:** inspect and report; do not modify application code. Baseline documentation may be created or updated only if the user authorizes documentation changes.
+- **Score-only:** run `scripts/score_steer.py` and explain the level, each failed check and its fix. Change nothing. See `references/steer-score.md`.
 
 If the user specifies a scope, stay within it. Otherwise inspect the repository broadly but prioritize high-impact areas.
 
@@ -56,6 +57,7 @@ Load only the supporting reference needed for the current phase:
 - Documentation structure and style: `references/technical-writing.md`
 - Final gates and iteration: `references/quality-gates.md`
 - Run branch, commit format and run report: `references/run-record.md`
+- Steer score, levels and checks: `references/steer-score.md`
 
 Use scripts in `scripts/` where available. Inspect a script before executing it in an unfamiliar repository.
 
@@ -69,16 +71,13 @@ Use scripts in `scripts/` where available. Inspect a script before executing it 
 6. Review recent Git history when available; use it as a prioritization signal, not proof of architectural quality.
 7. Identify uncommitted user changes. Do not overwrite or reformat them unnecessarily.
 8. Create a concise repository map: major subsystems, entry points, data stores, external integrations and test commands.
+9. Record the starting Steer score: `python <skill-root>/scripts/score_steer.py --repo <repository-root>`.
 
 Do not infer actual module boundaries from directory names alone.
 
 ### Start the run record
 
-Read `references/run-record.md`. Documentation and improvement are recorded as separate commits on a run branch.
-
-- **Git repository, clean working tree:** create the branch `codebase-improvement/<YYYY-MM-DD>` from HEAD.
-- **Uncommitted changes:** stop and ask the user how to proceed. Never carry them onto the run branch.
-- **Not a Git repository:** ask whether to run `git init` so the run is recorded. If the user declines, or nobody can answer (headless run), continue without a run record and say so in the final report.
+Read `references/run-record.md` before writing any file. Documentation and improvement are recorded as separate commits on a run branch. Stop and ask if the working tree has uncommitted changes, or if the target is not a Git repository.
 
 ## Phase 1 — Establish baseline documentation (mandatory)
 
@@ -90,8 +89,10 @@ Read `references/baseline-documentation.md`.
 4. Mark each important claim as verified, inferred or unknown when evidence is incomplete.
 5. Record gaps that cannot be resolved safely from available evidence.
 6. Record the domain vocabulary in `docs/glossary.md` (or the repository's existing glossary or `CONTEXT.md`).
-7. Validate links, names, interfaces and diagrams against the repository.
-8. Enforce the per-file token limit.
+7. Write or update `AGENTS.md` (or the existing `CLAUDE.md` or equivalent) from verified facts only: real build and test commands, conventions, canonical terms, areas not to change.
+8. Validate links, names, interfaces and diagrams against the repository.
+9. Enforce the per-file token limit.
+10. Re-score and aim for Steer level L3. Never write a document just to pass a check; leave it failed and record why.
 
 ### Baseline maturity gate
 
@@ -137,6 +138,8 @@ For each material finding report:
 - Expected benefits and measurable validation.
 - Risks, compatibility concerns and migration steps.
 - Estimated effort and dependencies.
+
+Include failed L4 Steer checks as findings: they change process or CI, so they need approval.
 
 Recommend a small, coherent first increment. Show current and proposed structure or flow when a diagram materially improves understanding.
 
@@ -221,7 +224,8 @@ Provide:
 6. Documentation updated.
 7. Per-file token counts, naming the tokenizer or estimation method.
 8. Remaining risks, unknowns and recommended next increment.
-9. Run branch, commit hashes and the run report path, produced by:
+9. Steer score before and after, and each check still failing with its reason.
+10. Run branch, commit hashes and the run report path, produced by:
 
    ```bash
    python <skill-root>/scripts/render_report.py --repo <repository-root>

@@ -36,7 +36,8 @@ codebase-improvement/
 ├── CONTEXT.md
 ├── docs/
 │   └── adr/
-│       └── 0001-phase-commits-as-run-record.md
+│       ├── 0001-phase-commits-as-run-record.md
+│       └── 0002-steer-score.md
 ├── skills/
 │   └── codebase-improvement/
 │       ├── SKILL.md
@@ -46,12 +47,14 @@ codebase-improvement/
 │       │   ├── refactoring-guidelines.md
 │       │   ├── technical-writing.md
 │       │   ├── quality-gates.md
-│       │   └── run-record.md
+│       │   ├── run-record.md
+│       │   └── steer-score.md
 │       ├── scripts/
 │       │   ├── check_doc_tokens.py
 │       │   ├── check_documentation.py
 │       │   ├── validate_links.py
-│       │   └── render_report.py
+│       │   ├── render_report.py
+│       │   └── score_steer.py
 │       └── assets/
 │           └── documentation-template/
 │               ├── architecture.md
@@ -72,7 +75,8 @@ codebase-improvement/
 │           └── src/
 │               └── main.py
 ├── tests/
-│   └── test_render_report.py
+│   ├── test_render_report.py
+│   └── test_score_steer.py
 └── .github/
     └── workflows/
         └── validate-skill.yml
@@ -109,6 +113,30 @@ cp -R /tmp/codebase-improvement/skills/codebase-improvement .claude/skills/
 ### Updating
 
 Re-run `npx skills add dvdthecoder/codebase-improvement` (or the copy step) to pick up the latest release. Review local customizations before replacing an installed skill.
+
+## Steer score
+
+For an agent, a repository's documentation is the context it works from. The Steer score measures how well that documentation steers an agent: 13 read-only checks give points out of 100 and a level on a ladder.
+
+| Level | Name | Meaning |
+|---|---|---|
+| L0 | Undescribed | No usable README |
+| L1 | Described | A human can tell what it is and how to run it |
+| L2 | Engineered | Architecture, glossary, test command and working links |
+| L3 | Steerable | Agent instructions, references that resolve, coverage, context-sized docs |
+| L4 | Self-maintaining | Decision records, fresh docs and CI documentation checks |
+
+A level counts only when it and every lower level pass in full.
+
+```bash
+# One repository, check by check
+python skills/codebase-improvement/scripts/score_steer.py --repo <target-repo>
+
+# Many repositories: one row each, then a count per level
+python skills/codebase-improvement/scripts/score_steer.py --batch ~/projects/*/
+```
+
+Ask the agent for **score-only** mode to get the score explained. Improvement runs score before and after, aim for L3 during the baseline, and record the score in commit trailers. See [references/steer-score.md](skills/codebase-improvement/references/steer-score.md).
 
 ## Run record and report
 

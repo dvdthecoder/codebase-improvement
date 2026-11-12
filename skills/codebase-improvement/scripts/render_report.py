@@ -21,13 +21,15 @@ def git(repo: Path, *args: str) -> str:
 
 def run_commits(repo: Path) -> tuple[dict, list[dict]]:
     """Return (baseline, later commits oldest-first) for the most recent run reachable from HEAD."""
-    fmt = f"%H%x1f%s%x1f%(trailers:key={TRAILER},valueonly,separator=%x2C)%x1f%B%x1e"
+    fmt = (f"%H%x1f%s%x1f%(trailers:key={TRAILER},valueonly,separator=%x2C)%x1f"
+           "%(trailers:key=Steer-Score-Before,valueonly)%x1f%(trailers:key=Steer-Score,valueonly)%x1f%B%x1e")
     newer: list[dict] = []
     for record in git(repo, "log", f"--format={fmt}", "HEAD").split("\x1e"):
         if not record.strip():
             continue
-        sha, subject, trailer, body = record.strip("\n").split("\x1f", 3)
-        commit = {"sha": sha, "subject": subject, "id": trailer.strip(), "body": body.strip()}
+        sha, subject, trailer, before, steer, body = record.strip("\n").split("\x1f", 5)
+        commit = {"sha": sha, "subject": subject, "id": trailer.strip(), "body": body.strip(),
+                  "before": before.strip(), "steer": steer.strip()}
         if commit["id"] == "baseline":
             return commit, list(reversed(newer))
         newer.append(commit)
@@ -101,10 +103,13 @@ def render(repo: Path) -> str:
                      f"<code>{TRAILER}</code> trailer.</p>")
         parts += [commit_section(repo, c, c["subject"]) for c in others]
 
+    scored = [c["steer"] for c in [baseline, *later] if c["steer"]]
+    steer = " → ".join(x for x in (baseline["before"], scored[-1] if scored else "") if x) or "not recorded"
+
     generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return PAGE.format(
         title=html.escape(repo.resolve().name),
-        branch=html.escape(branch), base=html.escape(base), generated=generated,
+        branch=html.escape(branch), base=html.escape(base), generated=generated, steer=html.escape(steer),
         body="\n".join(parts),
     )
 
@@ -121,7 +126,7 @@ PAGE = """<!doctype html>
 body {{ background:var(--bg); color:var(--fg); font:15px/1.55 system-ui, sans-serif; margin:0; }}
 main {{ max-width:1000px; margin:0 auto; padding:28px 16px 64px; }}
 h1 {{ margin:0 0 4px; font-size:26px; }} h2 {{ margin-top:36px; border-bottom:1px solid var(--line); padding-bottom:6px; }}
-.meta {{ color:var(--muted); margin:0 0 10px; }}
+.meta {{ color:var(--muted); margin:0 0 10px; }} .steer {{ font-size:17px; margin:4px 0 0; }}
 code, pre, .diff {{ font-family:ui-monospace, Menlo, monospace; font-size:12.5px; }}
 pre {{ background:var(--code); padding:12px 14px; border-radius:6px; overflow-x:auto; white-space:pre-wrap; }}
 pre.doc {{ white-space:pre-wrap; font-size:13px; line-height:1.5; }}
@@ -134,6 +139,7 @@ section {{ border:1px solid var(--line); border-radius:8px; padding:4px 16px 12p
 </style></head><body><main>
 <h1>Run report: {title}</h1>
 <p class="meta">Branch <code>{branch}</code> · base <code>{base}</code> · generated {generated} from git history</p>
+<p class="steer">Steer score: <strong>{steer}</strong></p>
 {body}
 </main></body></html>
 """

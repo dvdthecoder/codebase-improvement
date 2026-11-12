@@ -44,3 +44,6 @@ jobs:
 
       - name: Run render_report self-check
         run: python -B tests/test_render_report.py
+
+      - name: Run score_steer self-check
+        run: python -B tests/test_score_steer.py

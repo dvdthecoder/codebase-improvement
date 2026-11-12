@@ -6,6 +6,14 @@ Record each run so that documentation and improvement stay separate and reviewab
 
 ## Run branch
 
+Before writing any file:
+
+- **Git repository, clean working tree:** create the run branch from HEAD.
+- **Uncommitted changes:** stop and ask the user how to proceed. Never carry them onto the run branch.
+- **Not a Git repository:** ask whether to run `git init` so the run is recorded. If the user declines, or nobody can answer (headless run), continue without a run record (see the last section).
+
+Branch rules:
+
 - Name: `codebase-improvement/<YYYY-MM-DD>`. If the name exists, append `-2`, `-3` and so on.
 - Create it from HEAD at the start of the run, before writing any file.
 - Never commit to the branch the user had checked out.
@@ -35,6 +43,8 @@ check_doc_tokens.py --directory docs: 3 files, 0 failures (heuristic estimate)
 validate_links.py --directory .: 7 links, 0 errors
 
 Codebase-Improvement: baseline
+Steer-Score-Before: 46 L1
+Steer-Score: 77 L3
 ```
 
 ### Improvement commit
@@ -52,10 +62,12 @@ python -m pytest: 87 passed
 check_doc_tokens.py --directory docs: 0 failures
 
 Codebase-Improvement: ARCH-001
+Steer-Score: 85 L3
 ```
 
 Rules:
 - Use the finding ID from Phase 3 as the trailer value.
+- `Steer-Score` is the last line printed by `scripts/score_steer.py`, measured after the commit's changes. The Baseline commit also carries `Steer-Score-Before`, measured at the start of the run.
 - Under `Validation`, list exact commands and outcomes. Name skipped checks as skipped. A skipped check is not a pass.
 - Do not claim results that were not produced by a command in this run.
 

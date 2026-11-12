@@ -2,6 +2,13 @@
 
 All notable changes to this project are recorded here.
 
+## Unreleased
+
+- Steer score: `scripts/score_steer.py` measures how well a repository's documentation steers an agent, as points out of 100 and a gated level (L0 Undescribed to L4 Self-maintaining) from 13 read-only checks. `--batch` scores many repositories and counts them per level. See `references/steer-score.md` and `docs/adr/0002-steer-score.md`.
+- New score-only mode.
+- Improvement runs score before and after the baseline. Phase 1 aims for L3 with verified documentation, including an agent-instructions file. Failed L4 checks become findings.
+- Run commits carry `Steer-Score` trailers; the run report shows the change.
+
 ## 0.3.0
 
 - Baseline documentation now includes a domain glossary (`docs/glossary.md`, or the repository's existing glossary or `CONTEXT.md`), with a new template `assets/documentation-template/glossary.md`.

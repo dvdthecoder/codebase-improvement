@@ -35,6 +35,21 @@ _Avoid_: refactor commit, fix commit
 A self-contained HTML page generated from a run's Baseline and Improvement commits, showing documentation and improvements separately.
 _Avoid_: dashboard, summary
 
+**Steer**:
+How well a repository's own documentation directs an agent working in it: what the system is, how it is built and tested, which terms to use and which rules to follow. For an agent, the codebase and its documentation are the context it works from.
+_Avoid_: context quality, AI-readiness
+
+**Steer score**:
+A repeatable measure of a repository's Steer, tracked across runs and compared across repositories in a Batch run. Built in two tiers: software-development documentation first, then agent-specific steer.
+_Avoid_: doc score, quality score
+
+**Steer level**:
+The rung a repository has reached on the Steer ladder: L0 Undescribed, L1 Described, L2 Engineered, L3 Steerable, L4 Self-maintaining. A level is reached only when every check of that level and all lower levels passes.
+_Avoid_: grade, tier (tiers group levels; levels are the rungs)
+
+**Batch run**:
+Scoring many repositories in one invocation to see how many meet the Steer bar.
+
 ## Relationships
 
 - One **Skill** is **Published** once and **Installed** into many **Agents**

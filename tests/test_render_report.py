@@ -34,14 +34,17 @@ def main():
         assert r.returncode == 1 and "no commit with trailer" in r.stderr, r.stderr
 
         commit(repo, {"docs/README.md": "# Baseline <doc>\n"},
-               "docs: baseline documentation\n\nMaturity: Adequate\n\nCodebase-Improvement: baseline\n")
+               "docs: baseline documentation\n\nMaturity: Adequate\n\n"
+               "Codebase-Improvement: baseline\nSteer-Score-Before: 46 L1\nSteer-Score: 77 L3\n")
         commit(repo, {"app.py": "print(2)\n"},
-               "refactor: tidy (ARCH-001)\n\nFinding: dup\nValidation:\npytest: 1 passed\n\nCodebase-Improvement: ARCH-001\n")
+               "refactor: tidy (ARCH-001)\n\nFinding: dup\nValidation:\npytest: 1 passed\n\n"
+               "Codebase-Improvement: ARCH-001\nSteer-Score: 85 L3\n")
         commit(repo, {"notes.txt": "x\n"}, "user commit without trailer")
 
         out = sh(repo, sys.executable, "-B", str(SCRIPT), "--repo", str(repo))
         page = (repo / ".git/codebase-improvement/report.html").read_text()
         assert "Wrote" in out
+        assert "46 L1 → 85 L3" in page                                          # before → latest
         docs, rest = page.split("<h2>Improvements (1)</h2>")
         improvements, others = rest.split("<h2>Other commits (1)</h2>")
         assert "Baseline &lt;doc&gt;" in docs and "Maturity: Adequate" in docs   # doc content, escaped
