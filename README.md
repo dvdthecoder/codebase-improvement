@@ -2,17 +2,18 @@
 
 A portable Agent Skill for understanding an existing repository, establishing trustworthy baseline documentation, improving architecture through evidence-based and approved changes, and keeping documentation synchronized with implementation.
 
+For an agent, a repository's code and documentation are the context it works from. This skill makes that context trustworthy, measures it with the **Steer score**, and then improves the code against it.
+
 The workflow is deliberately **documentation-first**:
 
-1. Discover the repository and its existing evidence.
-2. Establish or repair baseline documentation of the current system.
+1. Discover the repository, record its starting Steer score, and create a run branch.
+2. Establish or repair baseline documentation of the current system: architecture, glossary and agent instructions (`AGENTS.md`), aiming for Steer level L3. Commit it as the **Baseline commit**.
 3. Assess architecture against the verified baseline and source code.
 4. Propose improvements and obtain approval at the configured decision gates.
 5. Implement selected changes and validate them.
-6. Update documentation to describe the verified new state.
-   Each approved improvement becomes its own commit, separate from the baseline documentation commit.
-7. Run consistency and token-budget checks.
-8. Repeat only when another worthwhile improvement exists.
+6. Update documentation to describe the verified new state, and commit each approved improvement as its own **Improvement commit**.
+7. Run consistency, token-budget and Steer checks.
+8. Repeat only when another worthwhile improvement exists, then generate the run report.
 
 ## Key guarantees
 
@@ -23,64 +24,18 @@ The workflow is deliberately **documentation-first**:
 - A preferred target of **4,200 tokens** leaves room for tokenizer differences and later edits.
 - Existing repository conventions and user changes are preserved.
 - The skill does not refactor indefinitely; it stops when remaining opportunities are low-value or speculative.
+- The skill commits only on its own run branch, never on the branch you had checked out, and never pushes or merges.
+- No documentation is written just to pass a Steer check; a check that cannot be passed honestly stays failed, with the reason.
 
 ## Repository layout
 
-```text
-codebase-improvement/
-├── README.md
-├── LICENSE
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-├── SECURITY.md
-├── CONTEXT.md
-├── docs/
-│   └── adr/
-│       ├── 0001-phase-commits-as-run-record.md
-│       └── 0002-steer-score.md
-├── skills/
-│   └── codebase-improvement/
-│       ├── SKILL.md
-│       ├── references/
-│       │   ├── baseline-documentation.md
-│       │   ├── architecture-assessment.md
-│       │   ├── refactoring-guidelines.md
-│       │   ├── technical-writing.md
-│       │   ├── quality-gates.md
-│       │   ├── run-record.md
-│       │   └── steer-score.md
-│       ├── scripts/
-│       │   ├── check_doc_tokens.py
-│       │   ├── check_documentation.py
-│       │   ├── validate_links.py
-│       │   ├── render_report.py
-│       │   └── score_steer.py
-│       └── assets/
-│           └── documentation-template/
-│               ├── architecture.md
-│               ├── component.md
-│               ├── glossary.md
-│               └── adr.md
-├── examples/
-│   ├── sample-assessment/
-│   │   ├── README.md
-│   │   ├── findings.md
-│   │   └── traceability.md
-│   └── fixtures/
-│       ├── missing-docs/
-│       │   └── src/
-│       │       └── main.py
-│       └── stale-docs/
-│           ├── README.md
-│           └── src/
-│               └── main.py
-├── tests/
-│   ├── test_render_report.py
-│   └── test_score_steer.py
-└── .github/
-    └── workflows/
-        └── validate-skill.yml
-```
+| Path | Contents |
+|---|---|
+| `skills/codebase-improvement/` | The skill: `SKILL.md`, `references/` (loaded per phase), `scripts/` (validators, `score_steer.py`, `render_report.py`) and `assets/` (doc templates) |
+| `docs/adr/` | Decisions about this skill's design |
+| `examples/` | Fixtures and a sample assessment |
+| `tests/` | Self-checks for the scripts |
+| `CONTEXT.md` | Glossary of this project's terms |
 
 ## Installation
 
@@ -113,6 +68,37 @@ cp -R /tmp/codebase-improvement/skills/codebase-improvement .claude/skills/
 ### Updating
 
 Re-run `npx skills add dvdthecoder/codebase-improvement` (or the copy step) to pick up the latest release. Review local customizations before replacing an installed skill.
+
+## Usage
+
+After installing, open the target repository in your agent and ask for the skill by name. The mode decides how far it goes.
+
+| Mode | What it does | Example prompt |
+|---|---|---|
+| **Interactive** (default) | Full loop. Stops for your approval before any code change. | `Use the codebase-improvement skill on this repository. Limit this run to one improvement.` |
+| **Assessment-only** | Baseline docs and findings; no code changes. | `Use the codebase-improvement skill in assessment-only mode. You may write documentation.` |
+| **Score-only** | Steer score explained; changes nothing. | `Use the codebase-improvement skill in score-only mode.` |
+| **Autonomous** | Implements low-risk changes without asking. Still stops for risky ones. | `Use the codebase-improvement skill in autonomous mode.` |
+
+The prompts work the same in Claude Code, Codex and OpenCode. Claude Code also accepts `/codebase-improvement`.
+
+What you get from an interactive run:
+
+1. A branch `codebase-improvement/<date>` with one Baseline commit (docs only) and one Improvement commit per approved change.
+2. Updated `docs/` (including `docs/glossary.md`) and `AGENTS.md`.
+3. A final report in the chat, including the Steer score before and after.
+4. An HTML run report at `.git/codebase-improvement/report.html`.
+
+Review the branch, then merge or delete it.
+
+### Running the scripts directly
+
+The scripts need only Python 3.10+. After installing, they are in the skill folder, for example `.claude/skills/codebase-improvement/scripts/` or `.agents/skills/codebase-improvement/scripts/`. To score many repositories, install globally (`-g`) or use a clone of this repository:
+
+```bash
+git clone https://github.com/dvdthecoder/codebase-improvement.git ~/codebase-improvement
+python ~/codebase-improvement/skills/codebase-improvement/scripts/score_steer.py --batch ~/projects/*/
+```
 
 ## Steer score
 
@@ -195,7 +181,7 @@ Try the skill against the supplied fixtures:
 - `examples/fixtures/stale-docs/` has a README claim that conflicts with the implementation. A correct run fixes the README and leaves `src/main.py` unchanged. The fixture itself does not reveal the mismatch.
 - `examples/sample-assessment/` shows an illustrative assessment and evidence-to-change traceability format.
 
-These examples are teaching fixtures, not a claim that the skill has been run against a production repository.
+These are teaching fixtures. A headless assessment-only run on a git copy of `missing-docs` moved it from Steer **8 L0** to **77 L1** in one Baseline commit. It stayed at L1 because the fixture has no test suite, and the skill did not invent a test command.
 
 ## Design principles
 
@@ -208,7 +194,7 @@ These examples are teaching fixtures, not a claim that the skill has been run ag
 
 ## Customization
 
-The default workflow is interactive. A user may explicitly request autonomous execution or assessment-only mode. Even in autonomous mode, do not perform destructive, externally visible, security-sensitive, data-migrating, or public-contract changes without explicit approval.
+The default workflow is interactive. A user may explicitly request autonomous, assessment-only or score-only mode (see [Usage](#usage)). Even in autonomous mode, do not perform destructive, externally visible, security-sensitive, data-migrating, or public-contract changes without explicit approval.
 
 The 5,000-token limit applies to each generated documentation file, not to the combined repository. Do not split a document mechanically: split by coherent topic and preserve navigation.
 
