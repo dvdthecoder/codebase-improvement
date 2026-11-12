@@ -36,6 +36,7 @@ The workflow is deliberately **documentation-first**:
 | `examples/` | Fixtures and a sample assessment |
 | `tests/` | Self-checks for the scripts |
 | `CONTEXT.md` | Glossary of this project's terms |
+| `AGENTS.md` | Instructions for agents working on this repository |
 
 ## Installation
 

@@ -2,12 +2,14 @@
 
 All notable changes to this project are recorded here.
 
-## Unreleased
+## 0.4.0
 
 - Steer score: `scripts/score_steer.py` measures how well a repository's documentation steers an agent, as points out of 100 and a gated level (L0 Undescribed to L4 Self-maintaining) from 13 read-only checks. `--batch` scores many repositories and counts them per level. See `references/steer-score.md` and `docs/adr/0002-steer-score.md`.
 - New score-only mode.
 - Improvement runs score before and after the baseline. Phase 1 aims for L3 with verified documentation, including an agent-instructions file. Failed L4 checks become findings.
 - Run commits carry `Steer-Score` trailers; the run report shows the change.
+- README: new Usage section with a prompt per mode and how to run the scripts directly.
+- `AGENTS.md` for agents working on this repository.
 
 ## 0.3.0
 
